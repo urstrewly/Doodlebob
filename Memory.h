@@ -26,16 +26,17 @@ protected:
 	HANDLE hProcess  = NULL;
 	DWORD  client	 = NULL;
 	DWORD  engine	 = NULL;
-	bool   off = false;
+	const bool   off = false;
 
 private:
-	bool GetProcessByName(const char* p  );
-	int	 GetModuleBase	 (LPCSTR t_module);
+	bool  GetProcessByName(const char* p  );
+	int	  GetModuleBase(LPCSTR t_module);
 	
 };
 
 class Player : public MemoryManagement
 {
+
 public:
 	Player();
 	~Player();
