@@ -9,7 +9,8 @@ MemoryManagement::~MemoryManagement()
 {
 
 	CloseHandle(hProcess);
-	hProcess = INVALID_HANDLE_VALUE;
+	hProcess  = INVALID_HANDLE_VALUE;
+	ProcessId = NULL;
 }
 
 bool MemoryManagement::GetProcessByName(const char * p)
@@ -29,8 +30,17 @@ bool MemoryManagement::GetProcessByName(const char * p)
 
 			if (strcmp(entry.szExeFile, p) == 0)
 			{
+				ProcessId = entry.th32ProcessID;
 				
-				ProcessId = entry.th32ProcessID;	
+				if (!ProcessId)
+					return false;
+
+				hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ProcessId);
+
+				if (hProcess == INVALID_HANDLE_VALUE)
+					return false;
+
+				CloseHandle(snapshot);
 				return true;
 			}
 		}
@@ -51,15 +61,19 @@ int MemoryManagement::GetModuleBase(LPCSTR t_module)
 	{
 		while (Module32Next(snapshot, &entry) == TRUE)
 		{
+			
 			if (strcmp(entry.szModule, t_module) == 0)
 			{
-
+				std::cout << t_module << "-> " << entry.szModule << std::endl;
 				return((DWORD)entry.modBaseAddr);
-				break;
 			}
 		}
 	}
+
+	std::cout << "Unable to find->" << t_module << std::endl;
+
 	CloseHandle(snapshot);
+	entry.modBaseAddr = 0;
 	return 0;
 }
 
@@ -67,17 +81,14 @@ bool MemoryManagement::Open(const char* pp)
 {
 	if (!GetProcessByName(pp))
 		return false;
-
-	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ProcessId);
-
-	if (hProcess == NULL)
-		return false;
 	
-	client = GetModuleBase("client.dll");
+	std::cout << hProcess << std::endl;
+	std::cout << ProcessId << std::endl;
+
+	client = GetModuleBase("client_panorama.dll");
 	engine = GetModuleBase("engine.dll");
 
-	std::cout << client << " : " << engine << std::endl;
-	
+	std::cout << client << " " << engine << std::endl;
 	return true;
 }
 
