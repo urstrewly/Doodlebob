@@ -1,5 +1,5 @@
 # Doodlebob
-CS-GO Cheat. This is just to get somebody started in external gamehacking. The GetModuleBase function is broken. 
+CS-GO Cheat. This is just to get somebody started in external gamehacking. 
 
 
 to do:
